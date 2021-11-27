@@ -32,7 +32,14 @@ public:
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UCombatAttributeSet, Health)
 
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes/Health", ReplicatedUsing = OnRep_MaxHealth)
+	FGameplayAttributeData MaxHealth;
+	ATTRIBUTE_ACCESSORS(UCombatAttributeSet, MaxHealth)
+
 protected:
 	UFUNCTION()
 	virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
+
+	UFUNCTION()
+	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
 };

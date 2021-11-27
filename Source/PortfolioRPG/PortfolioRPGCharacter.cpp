@@ -11,6 +11,10 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "CharacterAbilitySystemComponent.h"
+#include "CombatAttributeSet.h"
+#include "CharacterGameplayAbility.h"
+#include <GameplayEffectTypes.h>
 
 APortfolioRPGCharacter::APortfolioRPGCharacter()
 {
@@ -55,6 +59,13 @@ APortfolioRPGCharacter::APortfolioRPGCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	AbilitySystemComponent = CreateDefaultSubobject<UCharacterAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	Attributes = CreateDefaultSubobject<UCombatAttributeSet>("Attributes");
+	
 }
 
 void APortfolioRPGCharacter::Tick(float DeltaSeconds)
@@ -86,5 +97,74 @@ void APortfolioRPGCharacter::Tick(float DeltaSeconds)
 			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 			CursorToWorld->SetWorldRotation(CursorR);
 		}
+	}
+}
+
+class UAbilitySystemComponent* APortfolioRPGCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void APortfolioRPGCharacter::InitializeAttributes()
+{
+	if (AbilitySystemComponent && DefaultAttributeEffect)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContext);
+
+		if (SpecHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle GEHanlde = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
+}
+
+void APortfolioRPGCharacter::GiveAbilities()
+{
+	if (HasAuthority() && AbilitySystemComponent)
+	{
+		for (TSubclassOf<UCharacterGameplayAbility>& StartupAbility : DefaultAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+		}
+	}
+}
+
+void APortfolioRPGCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	//Server GAS init
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	
+	InitializeAttributes();
+	GiveAbilities();
+}
+
+void APortfolioRPGCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitializeAttributes();
+
+	if (AbilitySystemComponent && InputComponent)
+	{
+		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", "EPortfolioRPGAbilityInputID", static_cast<int32>(EPortfolioRPGAbilityInputID::Confirm), static_cast<int32>(EPortfolioRPGAbilityInputID::Cancel));
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+	}
+
+}
+
+void APortfolioRPGCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+{
+	
+	check(PlayerInputComponent);
+	if (AbilitySystemComponent && InputComponent)
+	{
+		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", "EPortfolioRPGAbilityInputID", static_cast<int32>(EPortfolioRPGAbilityInputID::Confirm), static_cast<int32>(EPortfolioRPGAbilityInputID::Cancel)); 
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
 	}
 }

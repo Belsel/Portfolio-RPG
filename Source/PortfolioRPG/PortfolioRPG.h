@@ -7,7 +7,7 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogPortfolioRPG, Log, All);
 
 UENUM(BlueprintType)
-enum class EPortfolioRPGAbilityInput : uint8
+enum class EPortfolioRPGAbilityInputID : uint8
 {
 	None,
 	Confirm,

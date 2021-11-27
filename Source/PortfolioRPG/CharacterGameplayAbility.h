@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "PortfolioRPG.h"
 #include "CharacterGameplayAbility.generated.h"
 
 /**
@@ -14,4 +15,11 @@ class PORTFOLIORPG_API UCharacterGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 	
+public:
+
+	UCharacterGameplayAbility();
+
+	// Abilities with this set will automatically activate when the input is pressed
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
+	EPortfolioRPGAbilityInputID AbilityInputID = EPortfolioRPGAbilityInputID::None;
 };

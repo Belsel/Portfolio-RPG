@@ -5,6 +5,7 @@
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "PortfolioRPGCharacter.h"
+#include "CharacterAbilitySystemComponent.h"
 #include "Engine/World.h"
 
 APortfolioRPGPlayerController::APortfolioRPGPlayerController()
@@ -37,6 +38,8 @@ void APortfolioRPGPlayerController::SetupInputComponent()
 	InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &APortfolioRPGPlayerController::MoveToTouchLocation);
 
 	InputComponent->BindAction("ResetVR", IE_Pressed, this, &APortfolioRPGPlayerController::OnResetVR);
+	
+
 }
 
 void APortfolioRPGPlayerController::OnResetVR()
