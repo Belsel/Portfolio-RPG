@@ -21,5 +21,5 @@ public:
 
 	// Abilities with this set will automatically activate when the input is pressed
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
-	EPortfolioRPGAbilityInputID AbilityInputID = EPortfolioRPGAbilityInputID::None;
+		EPortfolioRPGAbilityInputID AbilityInputID = EPortfolioRPGAbilityInputID::None;
 };

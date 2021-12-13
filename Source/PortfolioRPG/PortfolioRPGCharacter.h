@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "PortfolioRPG.h"
 #include <GameplayEffectTypes.h>
+#include "Animation/AnimSequence.h"
 #include "PortfolioRPGCharacter.generated.h"
 
 UCLASS(Blueprintable)
@@ -33,6 +34,9 @@ public:
 	virtual void InitializeAttributes();
 	virtual void GiveAbilities();
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Ability System")
+	void HandleAbility(UAnimSequenceBase* Animation);
+
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
@@ -42,7 +46,7 @@ public:
 
 	// Effect that initializes the default abilities
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
-	TArray<TSubclassOf<class UCharacterGameplayAbility>> DefaultAbilities;	
+	TArray<TSubclassOf<class UCharacterGameplayAbility>> DefaultAbilities;
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

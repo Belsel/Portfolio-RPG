@@ -132,6 +132,11 @@ void APortfolioRPGCharacter::GiveAbilities()
 	}
 }
 
+
+void APortfolioRPGCharacter::HandleAbility_Implementation(UAnimSequenceBase* Animation)
+{
+}
+
 void APortfolioRPGCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
