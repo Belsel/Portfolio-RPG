@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CharacterGameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "CharacterAbilitySystemComponent.generated.h"
 
@@ -14,4 +15,6 @@ class PORTFOLIORPG_API UCharacterAbilitySystemComponent : public UAbilitySystemC
 {
 	GENERATED_BODY()
 	
+public:
+
 };

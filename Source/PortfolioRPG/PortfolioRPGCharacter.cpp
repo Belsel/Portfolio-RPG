@@ -127,10 +127,27 @@ void APortfolioRPGCharacter::GiveAbilities()
 	{
 		for (TSubclassOf<UCharacterGameplayAbility>& StartupAbility : DefaultAbilities)
 		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+			if (StartupAbility != NULL)
+			{
+				LearnAbility(StartupAbility);
+			}
 		}
 	}
 }
+
+FGameplayAbilitySpecHandle APortfolioRPGCharacter::LearnAbility(TSubclassOf<UCharacterGameplayAbility>& Ability)
+{
+	FGameplayAbilitySpecHandle AbilitySpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
+	AbilitiesLearnt.Add(Ability , AbilitySpecHandle);
+	return AbilitySpecHandle;
+}
+
+void APortfolioRPGCharacter::ForgetAbility(TSubclassOf<UCharacterGameplayAbility>& Ability)
+{
+	FGameplayAbilitySpecHandle AbilitySpecHandle = *AbilitiesLearnt.Find(Ability);
+	AbilitySystemComponent->ClearAbility(AbilitySpecHandle);
+}
+
 
 
 void APortfolioRPGCharacter::HandleAbility_Implementation(UAnimSequenceBase* Animation)

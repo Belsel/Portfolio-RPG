@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
 #include "PortfolioRPG.h"
+#include "GameplayAbilitySpec.h"
 #include <GameplayEffectTypes.h>
 #include "Animation/AnimSequence.h"
 #include "PortfolioRPGCharacter.generated.h"
@@ -34,6 +35,13 @@ public:
 	virtual void InitializeAttributes();
 	virtual void GiveAbilities();
 
+
+	UFUNCTION(BlueprintCallable, Category = "Ability System")
+	virtual FGameplayAbilitySpecHandle LearnAbility( UPARAM(ref) TSubclassOf<UCharacterGameplayAbility>& Ability);
+
+	UFUNCTION(BlueprintCallable, Category = "Ability System")
+	virtual void ForgetAbility(UPARAM(ref) TSubclassOf<UCharacterGameplayAbility>& Ability);
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Ability System")
 	void HandleAbility(UAnimSequenceBase* Animation);
 
@@ -45,8 +53,13 @@ public:
 	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
 
 	// Effect that initializes the default abilities
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS")
 	TArray<TSubclassOf<class UCharacterGameplayAbility>> DefaultAbilities;
+
+	UPROPERTY(VisibleAnywhere, Category = "GAS")
+	TMap<TSubclassOf<UCharacterGameplayAbility>, FGameplayAbilitySpecHandle> AbilitiesLearnt;
+
+
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

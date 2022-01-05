@@ -27,6 +27,22 @@
 		{
 			"Name": "GameplayAbilities",
 			"Enabled": true
+		},
+		{
+			"Name": "GameFeatures",
+			"Enabled": true
+		},
+		{
+			"Name": "ModularGameplay",
+			"Enabled": true
+		},
+		{
+			"Name": "AncientBattle",
+			"Enabled": false
+		},
+		{
+			"Name": "BaseContent",
+			"Enabled": false
 		}
 	]
 }
