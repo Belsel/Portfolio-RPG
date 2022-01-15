@@ -32,32 +32,11 @@ public:
 
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	virtual void InitializeAttributes();
-	virtual void GiveAbilities();
-
-
-	UFUNCTION(BlueprintCallable, Category = "Ability System")
-	virtual FGameplayAbilitySpecHandle LearnAbility( UPARAM(ref) TSubclassOf<UCharacterGameplayAbility>& Ability);
-
-	UFUNCTION(BlueprintCallable, Category = "Ability System")
-	virtual void ForgetAbility(UPARAM(ref) TSubclassOf<UCharacterGameplayAbility>& Ability);
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Ability System")
 	void HandleAbility(UAnimSequenceBase* Animation);
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
-
-	// Effect that initializes the default attributes
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
-	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
-
-	// Effect that initializes the default abilities
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS")
-	TArray<TSubclassOf<class UCharacterGameplayAbility>> DefaultAbilities;
-
-	UPROPERTY(VisibleAnywhere, Category = "GAS")
-	TMap<TSubclassOf<UCharacterGameplayAbility>, FGameplayAbilitySpecHandle> AbilitiesLearnt;
 
 
 protected:

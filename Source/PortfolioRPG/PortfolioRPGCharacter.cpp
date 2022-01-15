@@ -105,51 +105,6 @@ class UAbilitySystemComponent* APortfolioRPGCharacter::GetAbilitySystemComponent
 	return AbilitySystemComponent;
 }
 
-void APortfolioRPGCharacter::InitializeAttributes()
-{
-	if (AbilitySystemComponent && DefaultAttributeEffect)
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-
-		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContext);
-
-		if (SpecHandle.IsValid())
-		{
-			FActiveGameplayEffectHandle GEHanlde = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		}
-	}
-}
-
-void APortfolioRPGCharacter::GiveAbilities()
-{
-	if (HasAuthority() && AbilitySystemComponent)
-	{
-		for (TSubclassOf<UCharacterGameplayAbility>& StartupAbility : DefaultAbilities)
-		{
-			if (StartupAbility != NULL)
-			{
-				LearnAbility(StartupAbility);
-			}
-		}
-	}
-}
-
-FGameplayAbilitySpecHandle APortfolioRPGCharacter::LearnAbility(TSubclassOf<UCharacterGameplayAbility>& Ability)
-{
-	FGameplayAbilitySpecHandle AbilitySpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
-	AbilitiesLearnt.Add(Ability , AbilitySpecHandle);
-	return AbilitySpecHandle;
-}
-
-void APortfolioRPGCharacter::ForgetAbility(TSubclassOf<UCharacterGameplayAbility>& Ability)
-{
-	FGameplayAbilitySpecHandle AbilitySpecHandle = *AbilitiesLearnt.Find(Ability);
-	AbilitySystemComponent->ClearAbility(AbilitySpecHandle);
-}
-
-
-
 void APortfolioRPGCharacter::HandleAbility_Implementation(UAnimSequenceBase* Animation)
 {
 }
@@ -160,23 +115,31 @@ void APortfolioRPGCharacter::PossessedBy(AController* NewController)
 
 	//Server GAS init
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	
-	InitializeAttributes();
-	GiveAbilities();
+	if (HasAuthority() && AbilitySystemComponent)
+	{
+		if (AbilitySystemComponent->DefaultAttributeEffect)
+		{
+			AbilitySystemComponent->InitializeAttributes();
+		}
+	AbilitySystemComponent->InitAbilities();
+	}
 }
 
 void APortfolioRPGCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	InitializeAttributes();
-
-	if (AbilitySystemComponent && InputComponent)
+	if (AbilitySystemComponent)
 	{
-		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", "EPortfolioRPGAbilityInputID", static_cast<int32>(EPortfolioRPGAbilityInputID::Confirm), static_cast<int32>(EPortfolioRPGAbilityInputID::Cancel));
-		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		AbilitySystemComponent->InitializeAttributes();
+
+		if (InputComponent)
+		{
+			const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", "EPortfolioRPGAbilityInputID", static_cast<int32>(EPortfolioRPGAbilityInputID::Confirm), static_cast<int32>(EPortfolioRPGAbilityInputID::Cancel));
+			AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+		}
 	}
+	
 
 }
 
